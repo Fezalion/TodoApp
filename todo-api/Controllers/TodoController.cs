@@ -7,13 +7,8 @@ namespace todo_api.Controllers;
 [Route("api/[controller]")]
 public class TodoController : ControllerBase
 {
-    public static List<Todo> Todos { get; set; } = new();
-    
-    public TodoController()
-    {
-       
-    }
-    
+    private static List<Todo> Todos { get; } = new();
+
     public static void SeedData()
     {
         if (!Todos.Any())
