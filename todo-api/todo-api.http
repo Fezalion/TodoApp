@@ -1,6 +1,141 @@
 @todo_api_HostAddress = http://localhost:5096
+### Check response status and content-type
+GET {{todo_api_HostAddress}}/api/Todo/
 
-GET {{todo_api_HostAddress}}/weatherforecast/
+> {%
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json", function () {
+        const type = response.contentType.mimeType;
+        client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
+    });
+    
+%}
+
+### Put first guid in global variable
+GET {{todo_api_HostAddress}}/api/Todo/
+
+> {%
+console.log(response.body[0].id);
+client.global.set("todo_api_first_guid", response.body[0].id);
+%}
+
+### Check response status and content-type
+GET {{todo_api_HostAddress}}/api/Todo/{{todo_api_first_guid}}
+
+> {%
+    client.test("Response content has expected id", function () {
+        client.assert(response.body.id === client.global.get("todo_api_first_guid"), "Response does not have expected id");
+    });
+
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json", function () {
+        const type = response.contentType.mimeType;
+        client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
+    });
+%}
+###
+
+POST {{todo_api_HostAddress}}/api/Todo/
+Content-Type: application/json
+
+{
+  "Title": "Test Todo"
+}
+
+> {%
+    client.test("Response content has expected title", function () {
+        client.assert(response.body.title === "Test Todo", "Response does not have expected title");
+    });
+
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+
+    client.test("Response content-type is json", function () {
+        const type = response.contentType.mimeType;
+        client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
+    });
+%}
+###
+
+PUT {{todo_api_HostAddress}}/api/Todo/{{todo_api_first_guid}}
+Content-Type: application/json
+
+{
+  "Title": "Test Todo Updated"
+}
+
+> {%
+    client.test("Response content has expected title", function () {
+        client.assert(response.body.title === "Test Todo Updated", "Response does not have expected title");
+    });
+
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json", function () {
+        const type = response.contentType.mimeType;
+        client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
+    });
+    
+%}
+###
+
+PUT {{todo_api_HostAddress}}/api/Todo/{{todo_api_first_guid}}/markdone
+Content-Type: application/json
+
+> {%
+    client.test("Response is marked as done", function () {
+        client.assert(response.body.isComplete === true, "Response is not marked as done");
+    });
+    
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json", function () {
+        const type = response.contentType.mimeType;
+        client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
+    });
+
+%}
+###
+
+PUT {{todo_api_HostAddress}}/api/Todo/{{todo_api_first_guid}}/markundone
+Content-Type: application/json
+
+> {%
+    client.test("Response is marked as undone", function () {
+        client.assert(response.body.isComplete === false, "Response is not marked as undone");
+    });
+    
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json", function () {
+        const type = response.contentType.mimeType;
+        client.assert(type === "application/json", `Expected 'application/json' but received '${type}'`);
+    });
+    
+%}
+###
+
+DELETE {{todo_api_HostAddress}}/api/Todo/{{todo_api_first_guid}}
 Accept: application/json
 
+> {%
+
+    client.test("Request executed successfully", function () {
+        client.assert(response.status === 204, "Response status is not 204");
+    });    
+    
+%}
 ###

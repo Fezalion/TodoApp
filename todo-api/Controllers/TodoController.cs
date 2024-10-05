@@ -7,7 +7,7 @@ namespace todo_api.Controllers;
 [Route("api/[controller]")]
 public class TodoController : ControllerBase
 {
-    public static List<Todo> Todos { get; set; } = new List<Todo>();
+    public static List<Todo> Todos { get; set; } = new();
     
     public TodoController()
     {
@@ -18,7 +18,7 @@ public class TodoController : ControllerBase
     {
         if (!Todos.Any())
         {
-            Todos.Add(new Todo { Title = "Learn C#", CreatedAt = DateTime.UtcNow });
+            Todos.Add(new Todo { Title = "Learn C#" });
             Todos.Add(new Todo { Title = "Learn ASP.NET Core" });
             Todos.Add(new Todo { Title = "Build a Web API" }); 
         }
@@ -30,10 +30,10 @@ public class TodoController : ControllerBase
         return Ok(Todos);
     }
     
-    [HttpGet("{id}")]
-    public IActionResult Get(Guid id)
+    [HttpGet("{guid:guid}")]
+    public IActionResult Get(Guid guid)
     {
-        var todo = Todos.FirstOrDefault(t => t.Id == id);
+        var todo = Todos.FirstOrDefault(t => t.Id == guid);
         if (todo == null)
         {
             return NotFound();
@@ -41,17 +41,17 @@ public class TodoController : ControllerBase
         return Ok(todo);
     }
     
-    [HttpPost()]
+    [HttpPost]
     public IActionResult Post([FromBody] Todo todo)
     {
         Todos.Add(todo);
         return CreatedAtAction(nameof(Get), new { id = todo.Id }, todo);
     }
     
-    [HttpPut("{id}")]
-    public IActionResult Put(Guid id, [FromBody] Todo todo)
+    [HttpPut("{guid:guid}")]
+    public IActionResult Put(Guid guid, [FromBody] Todo todo)
     {
-        var existingTodo = Todos.FirstOrDefault(t => t.Id == id);
+        var existingTodo = Todos.FirstOrDefault(t => t.Id == guid);
         if (existingTodo == null)
         {
             return NotFound();
@@ -59,13 +59,13 @@ public class TodoController : ControllerBase
         existingTodo.Title = todo.Title;
         existingTodo.IsComplete = todo.IsComplete;
         existingTodo.CompletedAt = todo.IsComplete ? DateTime.UtcNow : null;
-        return NoContent();
+        return Ok(existingTodo);
     }
     
-    [HttpDelete("{id}")]
-    public IActionResult Delete(Guid id)
+    [HttpDelete("{guid:guid}")]
+    public IActionResult Delete(Guid guid)
     {
-        var todo = Todos.FirstOrDefault(t => t.Id == id);
+        var todo = Todos.FirstOrDefault(t => t.Id == guid);
         if (todo == null)
         {
             return NotFound();
@@ -74,36 +74,36 @@ public class TodoController : ControllerBase
         return NoContent();
     }
     
-    [HttpPut("{id}/markdone")]
-    public IActionResult MarkDone(Guid id)
+    [HttpPut("{guid:guid}/markdone")]
+    public IActionResult MarkDone(Guid guid)
     {
-        var todo = Todos.FirstOrDefault(t => t.Id == id);
+        var todo = Todos.FirstOrDefault(t => t.Id == guid);
         if (todo == null)
         {
             return NotFound();
         }
         todo.IsComplete = true;
         todo.CompletedAt = DateTime.UtcNow;
-        return NoContent();
+        return Ok(todo);
     }
     
-    [HttpPut("{id}/markundone")]
-    public IActionResult MarkUndone(Guid id)
+    [HttpPut("{guid:guid}/markundone")]
+    public IActionResult MarkUndone(Guid guid)
     {
-        var todo = Todos.FirstOrDefault(t => t.Id == id);
+        var todo = Todos.FirstOrDefault(t => t.Id == guid);
         if (todo == null)
         {
             return NotFound();
         }
         todo.IsComplete = false;
         todo.CompletedAt = null;
-        return NoContent();
+        return Ok(todo);
     }
     
     [HttpDelete("cleardone")]
     public IActionResult ClearDone()
     {
         Todos.RemoveAll(t => t.IsComplete);
-        return NoContent();
+        return Ok(Todos);
     }
 }

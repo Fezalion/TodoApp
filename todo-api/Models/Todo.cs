@@ -8,6 +8,6 @@ public class Todo
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Title { get; set; }
     public bool IsComplete { get; set; } = false;
-    public DateTime CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? CompletedAt { get; set; }
 }
