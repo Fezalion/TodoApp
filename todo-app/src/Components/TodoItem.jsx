@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Modal from './Modal';
+import { AnimatePresence } from 'framer-motion';
 
 const styles = {
     todoDone: "border-2 rounded-lg border-green-400",
     todoUndone: "border-2 rounded-lg border-gray-400"
 };
 
-const TodoItem = ({ id, title, isComplete, markdone, markundone, deleteTodo }) => {
+const TodoItem = ({ id, title, description, isComplete, markdone, markundone, deleteTodo, updateTodo }) => {
     const [showModal, setShowModal] = useState(false);
 
     const handleMarkDone = async () => {
@@ -41,6 +42,20 @@ const TodoItem = ({ id, title, isComplete, markdone, markundone, deleteTodo }) =
         setShowModal(true);
     };
 
+    const handleUpdate = async (updatedTodo) => {        
+        try {
+            const newtodo = {
+                title: updatedTodo.title,
+                description: updatedTodo.description
+            };
+            await axios.put(`http://localhost:5096/api/Todo/${id}`, newtodo);
+            updateTodo(id, newtodo);
+            setShowModal(false);
+        } catch (error) {
+            console.error('Error updating todo:', error);
+        }
+    };
+
     return (
         <>
             <div className={"flex flex-col group text-4xl my-2 p-2 " + (isComplete ? styles.todoDone : styles.todoUndone)}>
@@ -53,11 +68,17 @@ const TodoItem = ({ id, title, isComplete, markdone, markundone, deleteTodo }) =
                     <span onClick={handleDelete} className="group-hover:opacity-100 group-hover:scale-100 opacity-0 scale-0 transition duration-100 ease-in-out cursor-pointer">X</span>
                 </span>
             </div>
-            <Modal show={showModal} onClose={() => setShowModal(false)}>
-                <h2>Todo Details</h2>
-                <p>Title: {title}</p>
-                <p>Status: {isComplete ? "Complete" : "Incomplete"}</p>
-            </Modal>
+            <AnimatePresence>
+                {showModal && (
+                    <Modal
+                        show={showModal}
+                        onClose={() => setShowModal(false)}
+                        onSubmit={handleUpdate}
+                        initialTitle={title}
+                        initialDescription={description}
+                    />
+                )}
+            </AnimatePresence>
         </>
     );
 };

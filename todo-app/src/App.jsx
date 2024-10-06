@@ -17,7 +17,6 @@ function App() {
             })
             .catch(error => {
                 console.error('Error fetching todos:', error);
-                setLoading(false);
             });
     }, []);
 
@@ -55,8 +54,20 @@ function App() {
             console.error('Error adding todo:', error);
         }
     }
+    
+    const updateTodo = async (id, updatedTodo) => {
+        setTodos(todos.map(todo => {
+            if (todo.id === id) {
+                todo.title = updatedTodo.title;
+                todo.description = updatedTodo.description;
+            }
+            return todo;
+        }));
+    }
+    
     return (
-        <>
+        loading ? <h1>Loading...</h1> :
+        <div>
             <div className={"mx-auto p-4 border-2 border-gray-500 rounded-lg " + todos.count <= 0 ? "hidden" : ""}>
                 {loading ?
                     <h1>Loading...</h1> :
@@ -65,6 +76,7 @@ function App() {
                                   markdone={markDone}
                                   markundone={markundone}
                                   deleteTodo={deleteTodo}
+                                  updateTodo={updateTodo}
                         />)}
             </div>
             <div>                
@@ -82,7 +94,7 @@ function App() {
                     </button>
                 </form>
             </div>
-        </>
+        </div>
     );
 }
 

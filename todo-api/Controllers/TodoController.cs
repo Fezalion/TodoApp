@@ -53,6 +53,7 @@ public class TodoController : ControllerBase
             return NotFound();
         }
         existingTodo.Title = todo.Title;
+        existingTodo.Description = todo.Description;
         existingTodo.IsComplete = todo.IsComplete;
         existingTodo.CompletedAt = todo.IsComplete ? DateTime.UtcNow : null;
         return Ok(Todos);
