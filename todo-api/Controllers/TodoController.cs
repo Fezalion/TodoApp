@@ -13,9 +13,9 @@ public class TodoController : ControllerBase
     {
         if (!Todos.Any())
         {
-            Todos.Add(new Todo { Title = "Learn C#" });
-            Todos.Add(new Todo { Title = "Learn ASP.NET Core" });
-            Todos.Add(new Todo { Title = "Build a Web API" }); 
+            Todos.Add(new Todo { Title = "Learn C#", Description = "Learn C# from scratch", IsComplete = true, CompletedAt = DateTime.UtcNow });
+            Todos.Add(new Todo { Title = "Learn ASP.NET Core", Description = "Learn ASP.NET Core from scratch" });
+            Todos.Add(new Todo { Title = "Build a Web API", Description = "Build a Web API using ASP.NET Core" }); 
         }
     }
     
@@ -43,8 +43,9 @@ public class TodoController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = todo.Id }, todo);
     }
     
-    [HttpPut("{guid:guid}")]
-    public IActionResult Put(Guid guid, [FromBody] Todo todo)
+    [HttpPut]
+    [Route("{guid:guid}")]
+    public IActionResult Put([FromRoute] Guid guid, [FromBody] Todo todo)
     {
         var existingTodo = Todos.FirstOrDefault(t => t.Id == guid);
         if (existingTodo == null)
@@ -54,10 +55,11 @@ public class TodoController : ControllerBase
         existingTodo.Title = todo.Title;
         existingTodo.IsComplete = todo.IsComplete;
         existingTodo.CompletedAt = todo.IsComplete ? DateTime.UtcNow : null;
-        return Ok(existingTodo);
+        return Ok(Todos);
     }
     
-    [HttpDelete("{guid:guid}")]
+    [HttpDelete]
+    [Route("{guid:guid}")]
     public IActionResult Delete(Guid guid)
     {
         var todo = Todos.FirstOrDefault(t => t.Id == guid);
@@ -69,7 +71,8 @@ public class TodoController : ControllerBase
         return NoContent();
     }
     
-    [HttpPut("{guid:guid}/markdone")]
+    [HttpPut]
+    [Route("{guid:guid}/markdone")]
     public IActionResult MarkDone(Guid guid)
     {
         var todo = Todos.FirstOrDefault(t => t.Id == guid);
@@ -82,7 +85,8 @@ public class TodoController : ControllerBase
         return Ok(todo);
     }
     
-    [HttpPut("{guid:guid}/markundone")]
+    [HttpPut]
+    [Route("{guid:guid}/markundone")]
     public IActionResult MarkUndone(Guid guid)
     {
         var todo = Todos.FirstOrDefault(t => t.Id == guid);
@@ -95,7 +99,8 @@ public class TodoController : ControllerBase
         return Ok(todo);
     }
     
-    [HttpDelete("cleardone")]
+    [HttpDelete]
+    [Route("cleardone")]
     public IActionResult ClearDone()
     {
         Todos.RemoveAll(t => t.IsComplete);
