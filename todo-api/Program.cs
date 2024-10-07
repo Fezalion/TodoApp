@@ -11,9 +11,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(MyAllowSpecificOrigins,
-        b => b.WithOrigins("http://localhost:5173")
+        b => b
+            .AllowAnyOrigin()
             .AllowAnyHeader()
             .AllowAnyMethod());
+});
+
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(5096);
 });
 
 var app = builder.Build();
